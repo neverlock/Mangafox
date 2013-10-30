@@ -4,6 +4,7 @@ Mangafox
 Mangafox loader
 Simple shell script for download manga from mangafox.com
 
+
 Help:
 ./mangafox.sh 
 Use: ./mangafox.sh [Serie] [Volume] [Chapter] [PageStart] [PageEnd]
