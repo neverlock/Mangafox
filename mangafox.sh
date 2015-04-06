@@ -52,23 +52,41 @@ enc_chap()
 load()
 {
 #echo "$1 $2 $3 $4 $5 $URL"
-mkdir -p $DIR/$1/$2/$3
+#     name cap page start  end
+#     name $CHAP $NOVOL 1 $MAXPAGE
+if [ "$3" == "NOVOLUME" ]
+then
+	mkdir -p $DIR/$1/$3/$2
+else
+	mkdir -p $DIR/$1/$2/$3
+fi
 for ((k=$4 ; k<= $5 ;k++))
 do
-	curl -s "$URL/$1/$2/$3/$k.html" > 1page.html
+	if [ "$3" == "NOVOLUME" ]
+	then
+		curl -s "$URL/$1/$2/$k.html" > 1page.html
+	else
+		curl -s "$URL/$1/$2/$3/$k.html" > 1page.html
+	fi
 	cat 1page.html |grep "mfcdn.net/store" |grep -v thumbnails |awk -F"src=\"" '{print $2}'|awk -F"\"" '{print $1}'|head -1 >data.txt
 	MANGA=`cat data.txt`
 	echo "Download[$k/$5]: $MANGA"
-	wget --quiet -P $DIR/$1/$2/$3 $MANGA
+	if [ "$3" == "NOVOLUME" ]
+	then
+		wget --quiet -P $DIR/$1/$3/$2 $MANGA
+	else
+		wget --quiet -P $DIR/$1/$2/$3 $MANGA
+	fi
 	rm data.txt 1page.html
 done
 }
 
 ################## Main #####################
-if [ $# -eq 0 ] || [ $# -eq 4 ]
+if [ $# -eq 0 ]
 then
 	echo "Use: $0 [Serie] [Volume] [Chapter] [PageStart] [PageEnd]"
 	echo "Example: ./mangafox.sh btooom v01 c001 20 60"
+	echo "Example: ./mangafox.sh btooom c001 c017 17"
 	echo "Example: ./mangafox.sh btooom v01 c001"
 	echo "Example: ./mangafox.sh btooom v09"
 	echo "Example: ./mangafox.sh btooom"
@@ -132,6 +150,31 @@ then
 	echo $MAXPAGE
 	load $1 $2 $3 1 $MAXPAGE
 	exit
+fi
+
+if [ $# -eq 4 ]
+then
+	#./mangafox.sh btooom c001 c017 17"
+	#$0		$1	$2  $3  $4
+	for ((j=1 ; j<= $4 ; j++))
+	do
+		echo "Loading from [Chapter ..$j]"
+		if [ $j -le 9 ]
+		then
+			CHAP="c00$j"
+		elif [ $j -le 99 ]
+		then
+			CHAP="c0$j"
+		else
+			CHAP="c$j"
+		fi
+		curl -s "$URL/$1/$CHAP/1.html" > 1page.html
+		echo -n "Finding max page ..."
+		MAXPAGE=`find_max_page`
+		echo $MAXPAGE
+		NOVOL="NOVOLUME"
+		load $1 $CHAP $NOVOL 1 $MAXPAGE
+	done
 fi
 
 if [ $# -eq 5 ]
