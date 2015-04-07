@@ -165,7 +165,8 @@ then
 		elif [ $j -le 99 ]
 		then
 			CHAP="c0$j"
-		else
+		elif [ $j -gt 99 ]
+		then
 			CHAP="c$j"
 		fi
 		curl -s "$URL/$1/$CHAP/1.html" > 1page.html
