@@ -96,6 +96,8 @@ func main() {
 		fmt.Printf("Please use: %s manga_name maxchapter\n",os.Args[0])
 		fmt.Printf("if you want to download http://www.kingsmanga.net/toriko-321/ from 1-312\n")
 		fmt.Printf("Example: %s toriko 312\n",os.Args[0])
+		fmt.Printf("if you want to download http://www.kingsmanga.net/toriko-321/ only 312\n")
+		fmt.Printf("Example: %s toriko 312 0\n",os.Args[0])
 		os.Exit(0)
 	}
 
