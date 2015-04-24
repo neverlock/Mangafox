@@ -28,3 +28,4 @@ Example: ./mangafox.sh btooom c001 c017 17
 ***TODO***
 
 update thai-cartoon.sh more condition
+update kingmangas.go more feture
