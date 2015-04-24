@@ -22,3 +22,9 @@ Example: ./mangafox.sh btooom
 
 This condition for manga don't have volume
 Example: ./mangafox.sh btooom c001 c017 17 
+
+./thai-cartoon.sh [serie] [maxVolume]
+
+***TODO***
+
+update thai-cartoon.sh more condition
