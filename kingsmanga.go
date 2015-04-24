@@ -44,7 +44,7 @@ func downloadFromUrl(url string,index string,mangaName string,path string) {
 	fileNameExt := tokens[len(tokens)-1]
 	fileName := strings.Split(fileNameExt,".")
 	ext := fileName[len(fileName)-1]
-	fmt.Println("Downloading", url, "to", fileNameExt)
+//	fmt.Println("Downloading", url, "to", fileNameExt)
 
 	mkdirOpt := fmt.Sprintf("%s/%s",mangaName,path)
         cmd := exec.Command("mkdir","-p",mkdirOpt)
@@ -55,7 +55,8 @@ func downloadFromUrl(url string,index string,mangaName string,path string) {
         }
 
 	newName := fmt.Sprintf("%s/%s/%s.%s",mangaName,path,index,ext)
-	fmt.Println("Downloading", url, "to", newName)
+//	fmt.Println("Downloading", url, "to", newName)
+	fmt.Printf("Downloading..[%s] [%s] [%s.%s] ",mangaName,path,index,ext)
 
 	// TODO: check file existence first with io.IsExist
 	output, err := os.Create(newName)
@@ -102,12 +103,10 @@ func main() {
 	}
 
 	if len(os.Args) == 3 {
-		fmt.Println(os.Args[2])
 		MAX,_ := strconv.Atoi(os.Args[2])
 
 		for i:=1 ; i <= MAX ; i++ {
 			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],i)
-			fmt.Println(URL)
 			x, _ := goquery.NewDocument(URL)
 			x.Find("img").Each(func(idx int, s *goquery.Selection) {
 			v, b := s.Attr("src")
@@ -118,8 +117,7 @@ func main() {
 
 			for index,element := range urls {
 				if !stringInSlice(element,ignore) {
-					fmt.Println("Index and element",index,element)
-				//	downloadFromUrl(element)
+					//fmt.Println("Index and element",index,element)
 					downloadFromUrl(element,convertTo000(index),os.Args[1],convertTo000(i))
 				}
 			}
@@ -132,7 +130,6 @@ func main() {
 		END,_ := strconv.Atoi(os.Args[3])
 		if END == 0 {
 			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],MAX)
-			fmt.Println(URL)
 			x, _ := goquery.NewDocument(URL)
 			x.Find("img").Each(func(idx int, s *goquery.Selection) {
 			v, b := s.Attr("src")
@@ -143,9 +140,7 @@ func main() {
 
 			for index,element := range urls {
 				if !stringInSlice(element,ignore) {
-					fmt.Printf("Index[%d]:=%s\n",index,element)
-					//downloadFromUrl(element,convertTo000(index),MAX)
-					//fmt.Println(convertTo000(index))
+					//fmt.Printf("Index[%d]:=%s\n",index,element)
 					downloadFromUrl(element,convertTo000(index),os.Args[1],convertTo000(MAX))
 				}
 			}
