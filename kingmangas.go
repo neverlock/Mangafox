@@ -4,6 +4,8 @@ import (
     "os"
     "io"
     "fmt"
+    "log"
+    "os/exec"
     "strings"
     "strconv"
     "net/http"
@@ -19,15 +21,46 @@ import (
 	return false
  }
 
-func downloadFromUrl(url string) {
+func convertTo000(index int) string{
+	if index < 10 {
+		return fmt.Sprintf("00%d",index)
+	}
+	if index < 99 {
+		return fmt.Sprintf("0%d",index)
+	}
+	if index < 999 {
+		return fmt.Sprintf("%d",index)
+	}
+	return "000"
+}
+
+func downloadFromUrl(url string,index string,mangaName string,path string) {
+/*
 	tokens := strings.Split(url, "/")
-	fileName := tokens[len(tokens)-1]
-	fmt.Println("Downloading", url, "to", fileName)
+	newName := tokens[len(tokens)-1]
+	fmt.Println("Downloading", url, "to", newName)
+*/
+	tokens := strings.Split(url, "/")
+	fileNameExt := tokens[len(tokens)-1]
+	fileName := strings.Split(fileNameExt,".")
+	ext := fileName[len(fileName)-1]
+	fmt.Println("Downloading", url, "to", fileNameExt)
+
+	mkdirOpt := fmt.Sprintf("%s/%s",mangaName,path)
+        cmd := exec.Command("mkdir","-p",mkdirOpt)
+
+        err := cmd.Run()
+        if err != nil {
+                log.Fatal(err)
+        }
+
+	newName := fmt.Sprintf("%s/%s/%s.%s",mangaName,path,index,ext)
+	fmt.Println("Downloading", url, "to", newName)
 
 	// TODO: check file existence first with io.IsExist
-	output, err := os.Create(fileName)
+	output, err := os.Create(newName)
 	if err != nil {
-		fmt.Println("Error while creating", fileName, "-", err)
+		fmt.Println("Error while creating", newName, "-", err)
 		return
 	}
 	defer output.Close()
@@ -68,22 +101,54 @@ func main() {
 
 	if len(os.Args) == 3 {
 		fmt.Println(os.Args[2])
-		volume,_ := strconv.Atoi(os.Args[2])
-		URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],volume)
-		fmt.Println(URL)
-		x, _ := goquery.NewDocument(URL)
-		x.Find("img").Each(func(idx int, s *goquery.Selection) {
-		v, b := s.Attr("src")
-		if b == true {
-			urls = append(urls, v)
-		}
-		})
+		MAX,_ := strconv.Atoi(os.Args[2])
 
-		for index,element := range urls {
-			if !stringInSlice(element,ignore) {
-				fmt.Println("Index and element",index,element)
-				downloadFromUrl(element)
+		for i:=1 ; i <= MAX ; i++ {
+			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],i)
+			fmt.Println(URL)
+			x, _ := goquery.NewDocument(URL)
+			x.Find("img").Each(func(idx int, s *goquery.Selection) {
+			v, b := s.Attr("src")
+			if b == true {
+				urls = append(urls, v)
 			}
+			})
+
+			for index,element := range urls {
+				if !stringInSlice(element,ignore) {
+					fmt.Println("Index and element",index,element)
+				//	downloadFromUrl(element)
+					downloadFromUrl(element,convertTo000(index),os.Args[1],convertTo000(i))
+				}
+			}
+		}
+		os.Exit(0)
+	}
+
+	if len(os.Args) == 4 {
+		MAX,_ := strconv.Atoi(os.Args[2])
+		END,_ := strconv.Atoi(os.Args[3])
+		if END == 0 {
+			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],MAX)
+			fmt.Println(URL)
+			x, _ := goquery.NewDocument(URL)
+			x.Find("img").Each(func(idx int, s *goquery.Selection) {
+			v, b := s.Attr("src")
+			if b == true {
+				urls = append(urls, v)
+			}
+			})
+
+			for index,element := range urls {
+				if !stringInSlice(element,ignore) {
+					fmt.Printf("Index[%d]:=%s\n",index,element)
+					//downloadFromUrl(element,convertTo000(index),MAX)
+					//fmt.Println(convertTo000(index))
+					downloadFromUrl(element,convertTo000(index),os.Args[1],convertTo000(MAX))
+				}
+			}
+		} else {
+			fmt.Println("Error")
 		}
 	}
 }
