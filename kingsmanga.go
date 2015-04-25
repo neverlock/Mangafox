@@ -91,8 +91,8 @@ func main() {
 		"http://i.imgur.com/pg8ZSoA.jpg",
 		"http://i.imgur.com/DGd795E.jpg",
 		"http://2.bp.blogspot.com/-iY8hZJCMKzI/UEQnVdjdKcI/AAAAAAABeWg/EPDdxH71TU0/s64/1346643763_9.png",
+		"http://upic.me/i/oh/30y18.png",
 		}
-	urls := []string{}
 	if len(os.Args) == 1 {
 		fmt.Printf("Please use: %s manga_name maxchapter\n",os.Args[0])
 		fmt.Printf("if you want to download http://www.kingsmanga.net/toriko-321/ from 1-312\n")
@@ -106,6 +106,7 @@ func main() {
 		MAX,_ := strconv.Atoi(os.Args[2])
 
 		for i:=1 ; i <= MAX ; i++ {
+			urls := []string{}
 			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],i)
 			x, _ := goquery.NewDocument(URL)
 			x.Find("img").Each(func(idx int, s *goquery.Selection) {
@@ -128,6 +129,7 @@ func main() {
 	if len(os.Args) == 4 {
 		MAX,_ := strconv.Atoi(os.Args[2])
 		END,_ := strconv.Atoi(os.Args[3])
+		urls := []string{}
 		if END == 0 {
 			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],MAX)
 			x, _ := goquery.NewDocument(URL)
