@@ -115,7 +115,7 @@ func main() {
 				urls = append(urls, v)
 			}
 			})
-
+			fmt.Printf("### Get data from [%s] volume [%d] ###\n",os.Args[1],i)
 			for index,element := range urls {
 				if !stringInSlice(element,ignore) {
 					//fmt.Println("Index and element",index,element)
