@@ -95,19 +95,32 @@ func main() {
 		}
 	if len(os.Args) == 1 {
 		fmt.Printf("Please use: %s manga_name maxchapter\n",os.Args[0])
-		fmt.Printf("if you want to download http://www.kingsmanga.net/toriko-321/ from 1-312\n")
-		fmt.Printf("Example: %s toriko 312\n",os.Args[0])
+		fmt.Printf("if you want to download all series of http://www.kingsmanga.net/manga/toriko/\n")
+		fmt.Printf("Example: %s toriko\n",os.Args[0])
 		fmt.Printf("if you want to download http://www.kingsmanga.net/toriko-321/ only 312\n")
 		fmt.Printf("Example: %s toriko 312 0\n",os.Args[0])
 		os.Exit(0)
 	}
 
-	if len(os.Args) == 3 {
-		MAX,_ := strconv.Atoi(os.Args[2])
-
-		for i:=1 ; i <= MAX ; i++ {
+	if len(os.Args) == 2 {
+		page := []string{}
+		URL := fmt.Sprintf("http://www.kingsmanga.net/manga/%s",os.Args[1])
+		x,_ := goquery.NewDocument(URL)
+		x.Find("a").Each(func(idx int,s *goquery.Selection) {
+		v, b := s.Attr("href")
+		if b == true && strings.Contains(v,os.Args[1]) {
+			page = append(page,v)
+		//	fmt.Println("link =",v)
+		}
+		})
+		MAX := len(page)-2
+		//fmt.Println("start link=",page[MAX])
+		for i:=MAX; i>=0 ;i-- {
 			urls := []string{}
-			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],i)
+			URL := page[i]
+			tokens := strings.Split(URL, "/")
+			chapter := tokens[len(tokens)-1]
+
 			x, _ := goquery.NewDocument(URL)
 			x.Find("img").Each(func(idx int, s *goquery.Selection) {
 			v, b := s.Attr("src")
@@ -115,11 +128,11 @@ func main() {
 				urls = append(urls, v)
 			}
 			})
-			fmt.Printf("### Get data from [%s] volume [%d] ###\n",os.Args[1],i)
+			fmt.Printf("### Get data from [%s] volume [%s] ###\n",os.Args[1],chapter)
 			for index,element := range urls {
 				if !stringInSlice(element,ignore) {
 					//fmt.Println("Index and element",index,element)
-					downloadFromUrl(element,convertTo000(index),os.Args[1],convertTo000(i))
+					downloadFromUrl(element,convertTo000(index),os.Args[1],chapter)
 				}
 			}
 		}
@@ -127,11 +140,11 @@ func main() {
 	}
 
 	if len(os.Args) == 4 {
-		MAX,_ := strconv.Atoi(os.Args[2])
+		//MAX,_ := strconv.Atoi(os.Args[2])
 		END,_ := strconv.Atoi(os.Args[3])
 		urls := []string{}
 		if END == 0 {
-			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%d",os.Args[1],MAX)
+			URL := fmt.Sprintf("http://www.kingsmanga.net/%s-%s",os.Args[1],os.Args[2])
 			x, _ := goquery.NewDocument(URL)
 			x.Find("img").Each(func(idx int, s *goquery.Selection) {
 			v, b := s.Attr("src")
@@ -143,7 +156,7 @@ func main() {
 			for index,element := range urls {
 				if !stringInSlice(element,ignore) {
 					//fmt.Printf("Index[%d]:=%s\n",index,element)
-					downloadFromUrl(element,convertTo000(index),os.Args[1],convertTo000(MAX))
+					downloadFromUrl(element,convertTo000(index),os.Args[1],os.Args[2])
 				}
 			}
 		} else {
