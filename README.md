@@ -20,6 +20,10 @@ Example: ./mangafox.sh btooom v09
 
 Example: ./mangafox.sh btooom
 
+mangafox.go
+
+Use: go run mangafox.go [Serie]
+
 This condition for manga don't have volume
 Example: ./mangafox.sh btooom c001 c017 17 
 
@@ -27,5 +31,4 @@ Example: ./mangafox.sh btooom c001 c017 17
 
 ***TODO***
 
-update thai-cartoon.sh more condition
-update kingmangas.go more feture
+update mangafox.go more feature now it only download whole serie

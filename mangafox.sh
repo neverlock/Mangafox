@@ -13,7 +13,16 @@ cnt_words()
 
 find_max_page()
 {
-	cat 1page.html |grep option|head -1|awk -F"<option value=\"0\"" '{print $1}'>2.html
+#	cat 1page.html |grep option|head -1|awk -F"<option value=\"0\"" '{print $1}'>2.html
+# mangafox change to gzip change from cat to gzcat
+#	gzcat 1page.html |grep option|head -1|awk -F"<option value=\"0\"" '{print $1}'>2.html
+	gzcat 1page.html
+	if [ $? ]
+		then
+			gzcat 1page.html |grep option|head -1|awk -F"<option value=\"0\"" '{print $1}'>2.html
+		else
+			cat 1page.html |grep option|head -1|awk -F"<option value=\"0\"" '{print $1}'>2.html
+		fi
 	MAXPAGE=`cnt_words 2.html option`
 	MAXPAGE=`expr $MAXPAGE / 2`
 	rm 2.html
@@ -51,7 +60,8 @@ enc_chap()
 
 load()
 {
-#echo "$1 $2 $3 $4 $5 $URL"
+	echo 'load $1 $VOL $CHAP 1 $MAXPAGE'
+       	echo "$1 $2 $3 $4 $5 $URL"
 #     name cap page start  end
 #     name $CHAP $NOVOL 1 $MAXPAGE
 if [ "$3" == "NOVOLUME" ]
@@ -68,7 +78,17 @@ do
 	else
 		curl -s "$URL/$1/$2/$3/$k.html" > 1page.html
 	fi
-	cat 1page.html |grep "mfcdn.net/store" |grep -v thumbnails |awk -F"src=\"" '{print $2}'|awk -F"\"" '{print $1}'|head -1 >data.txt
+
+# mangafox change to gzip change from cat to gzcat
+	#cat 1page.html |grep "mfcdn.net/store" |grep -v thumbnails |awk -F"src=\"" '{print $2}'|awk -F"\"" '{print $1}'|head -1 >data.txt
+	#gzcat 1page.html |grep "mfcdn.net/store" |grep -v thumbnails |awk -F"src=\"" '{print $2}'|awk -F"\"" '{print $1}'|head -1 >data.txt
+	gzcat 1page.html
+	if [ $? ]
+	then
+		gzcat 1page.html |grep "mfcdn.net/store" |grep -v thumbnails |awk -F"src=\"" '{print $2}'|awk -F"\"" '{print $1}'|head -1 >data.txt
+	else
+		cat 1page.html |grep "mfcdn.net/store" |grep -v thumbnails |awk -F"src=\"" '{print $2}'|awk -F"\"" '{print $1}'|head -1 >data.txt
+	fi
 	MANGA=`cat data.txt`
 	echo "Download[$k/$5]: $MANGA"
 	if [ "$3" == "NOVOLUME" ]
