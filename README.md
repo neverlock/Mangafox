@@ -5,7 +5,7 @@ Mangafox loader
 
 Simple shell script for download manga from mangafox.com
 
-you can read manga with lib manga net http://github.com/neverlock/manga__net
+you can read manga with lib manga net http://github.com/neverlock/manga_net
 
 
 Help:
